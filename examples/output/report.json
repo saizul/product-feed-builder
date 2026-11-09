@@ -1,0 +1,93 @@
+{
+  "tool": "feed-builder",
+  "version": "0.1.0",
+  "products_read": 7,
+  "filtered_out": [
+    {
+      "product_id": "BAG-2",
+      "reason": "out of stock"
+    },
+    {
+      "product_id": "GC-1",
+      "reason": "excluded category"
+    }
+  ],
+  "channels": {
+    "google": {
+      "products_in_feed": 4,
+      "products_rejected": 1,
+      "errors": 1,
+      "warnings": 2,
+      "rejected": [
+        {
+          "product_id": "NOIMG-1",
+          "reason": "required field 'image_link' is empty"
+        }
+      ],
+      "issues": [
+        {
+          "product_id": "TS-100-BLK-L",
+          "channel": "google",
+          "severity": "warning",
+          "code": "gtin_invalid",
+          "field": "gtin",
+          "message": "4006381333932: invalid check digit (expected 1); GTIN dropped"
+        },
+        {
+          "product_id": "TS-100-WHT-M",
+          "channel": "google",
+          "severity": "warning",
+          "code": "sale_expired",
+          "field": "sale_price",
+          "message": "sale ended 2020-02-01T23:59:00+06:00; sale price dropped"
+        },
+        {
+          "product_id": "NOIMG-1",
+          "channel": "google",
+          "severity": "error",
+          "code": "missing_required",
+          "field": "image_link",
+          "message": "required field 'image_link' is empty"
+        }
+      ]
+    },
+    "meta": {
+      "products_in_feed": 4,
+      "products_rejected": 1,
+      "errors": 1,
+      "warnings": 2,
+      "rejected": [
+        {
+          "product_id": "NOIMG-1",
+          "reason": "required field 'image_link' is empty"
+        }
+      ],
+      "issues": [
+        {
+          "product_id": "TS-100-BLK-L",
+          "channel": "meta",
+          "severity": "warning",
+          "code": "gtin_invalid",
+          "field": "gtin",
+          "message": "4006381333932: invalid check digit (expected 1); GTIN dropped"
+        },
+        {
+          "product_id": "TS-100-WHT-M",
+          "channel": "meta",
+          "severity": "warning",
+          "code": "sale_expired",
+          "field": "sale_price",
+          "message": "sale ended 2020-02-01T23:59:00+06:00; sale price dropped"
+        },
+        {
+          "product_id": "NOIMG-1",
+          "channel": "meta",
+          "severity": "error",
+          "code": "missing_required",
+          "field": "image_link",
+          "message": "required field 'image_link' is empty"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+SKU,Product Name,Description,URL,Image,Gallery,Regular Price,Sale Price,Sale Start,Sale End,Stock Status,Brand,EAN,Category,Parent SKU,Color,Size,Gender,Age Group,Qty
+TS-100-BLK-M,Classic Cotton Tee - Black / M,"<p>Soft <b>100% cotton</b> tee with a relaxed fit.</p>",/product/classic-tee?v=blk-m,https://cdn.example.com/img/tee-black.jpg,https://cdn.example.com/img/tee-black-2.jpg|https://cdn.example.com/img/tee-black-3.jpg,"1,250.00",990,2026-01-01,2027-12-31,instock,Example Wear,4006381333931,Men > T-Shirts,TS-100,Black,M,male,adult,12
+TS-100-BLK-L,Classic Cotton Tee - Black / L,"<p>Soft <b>100% cotton</b> tee with a relaxed fit.</p>",/product/classic-tee?v=blk-l,https://cdn.example.com/img/tee-black.jpg,,"1,250.00",,,,instock,Example Wear,4006381333932,Men > T-Shirts,TS-100,Black,L,male,adult,0
+TS-100-WHT-M,Classic Cotton Tee - White / M,"<p>Soft cotton tee with a relaxed fit.</p>",/product/classic-tee?v=wht-m,https://cdn.example.com/img/tee-white.jpg,,"1,250.00",1000,2020-01-01,2020-02-01,onbackorder,Example Wear,,Men > T-Shirts,TS-100,White,M,male,adult,
+MUG-7,Ceramic Mug 350ml,Hand-glazed ceramic mug that holds 350 ml and is dishwasher safe.,/product/ceramic-mug,https://cdn.example.com/img/mug.jpg,,18.50 USD,,,,instock,Kiln & Co,,Home > Kitchen,,,,,,40
+BAG-2,LEATHER SATCHEL,Full-grain leather satchel with brass hardware.,https://shop.example.com/product/satchel,https://cdn.example.com/img/satchel.jpg,,"৳৪,৫০০",,,,out of stock,Example Wear,036000291452,Bags,,,,,,0
+GC-1,Gift Card,Store credit,/product/gift-card,https://cdn.example.com/img/gift.jpg,,500,,,,instock,Example Wear,,Gift Cards,,,,,,
+NOIMG-1,Linen Scarf,A light linen scarf.,/product/scarf,,,320,,,,instock,Example Wear,,Accessories,,,,,,5

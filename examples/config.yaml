@@ -1,0 +1,53 @@
+currency: BDT
+store_url: https://shop.example.com
+timezone: "+06:00"
+
+feed:
+  title: Example Shop
+  link: https://shop.example.com
+  description: Synthetic example feed
+
+defaults:
+  condition: new
+
+fields:
+  title: "{title|truncate:150}"
+
+meta:
+  fields:
+    id: "shop_{id}"
+
+custom_labels:
+  0:
+    default: regular
+    rules:
+      - value: sale
+        when: {field: on_sale, op: eq, value: true}
+  1:
+    rules:
+      - value: premium
+        when: {field: price, op: gte, value: 5000}
+
+filters:
+  exclude_out_of_stock: true
+  exclude_categories: [Gift Cards]
+
+shipping:
+  - {country: BD, service: Standard, price: "60 BDT"}
+
+csv:
+  columns:
+    id: SKU
+    title: Product Name
+    link: URL
+    image_link: Image
+    additional_images: Gallery
+    price: Regular Price
+    sale_price: Sale Price
+    sale_start: Sale Start
+    sale_end: Sale End
+    availability: Stock Status
+    gtin: EAN
+    categories: Category
+    item_group_id: Parent SKU
+    stock_quantity: Qty

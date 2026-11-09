@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+  <channel>
+    <title>Example Shop</title>
+    <link>https://shop.example.com</link>
+    <description>Synthetic example feed</description>
+    <item>
+      <g:id>TS-100-BLK-M</g:id>
+      <g:title>Classic Cotton Tee - Black / M</g:title>
+      <g:description>Soft 100% cotton tee with a relaxed fit.</g:description>
+      <g:link>https://shop.example.com/product/classic-tee?v=blk-m</g:link>
+      <g:image_link>https://cdn.example.com/img/tee-black.jpg</g:image_link>
+      <g:additional_image_link>https://cdn.example.com/img/tee-black-2.jpg</g:additional_image_link>
+      <g:additional_image_link>https://cdn.example.com/img/tee-black-3.jpg</g:additional_image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>1250.00 BDT</g:price>
+      <g:sale_price>990.00 BDT</g:sale_price>
+      <g:sale_price_effective_date>2026-01-01T00:00+06:00/2027-12-31T23:59+06:00</g:sale_price_effective_date>
+      <g:brand>Example Wear</g:brand>
+      <g:gtin>4006381333931</g:gtin>
+      <g:condition>new</g:condition>
+      <g:item_group_id>TS-100</g:item_group_id>
+      <g:product_type>Men &gt; T-Shirts</g:product_type>
+      <g:color>Black</g:color>
+      <g:size>M</g:size>
+      <g:gender>male</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:custom_label_0>sale</g:custom_label_0>
+      <g:shipping>
+        <g:country>BD</g:country>
+        <g:service>Standard</g:service>
+        <g:price>60.00 BDT</g:price>
+      </g:shipping>
+    </item>
+    <item>
+      <g:id>TS-100-BLK-L</g:id>
+      <g:title>Classic Cotton Tee - Black / L</g:title>
+      <g:description>Soft 100% cotton tee with a relaxed fit.</g:description>
+      <g:link>https://shop.example.com/product/classic-tee?v=blk-l</g:link>
+      <g:image_link>https://cdn.example.com/img/tee-black.jpg</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>1250.00 BDT</g:price>
+      <g:brand>Example Wear</g:brand>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:condition>new</g:condition>
+      <g:item_group_id>TS-100</g:item_group_id>
+      <g:product_type>Men &gt; T-Shirts</g:product_type>
+      <g:color>Black</g:color>
+      <g:size>L</g:size>
+      <g:gender>male</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:custom_label_0>regular</g:custom_label_0>
+      <g:shipping>
+        <g:country>BD</g:country>
+        <g:service>Standard</g:service>
+        <g:price>60.00 BDT</g:price>
+      </g:shipping>
+    </item>
+    <item>
+      <g:id>TS-100-WHT-M</g:id>
+      <g:title>Classic Cotton Tee - White / M</g:title>
+      <g:description>Soft cotton tee with a relaxed fit.</g:description>
+      <g:link>https://shop.example.com/product/classic-tee?v=wht-m</g:link>
+      <g:image_link>https://cdn.example.com/img/tee-white.jpg</g:image_link>
+      <g:availability>backorder</g:availability>
+      <g:price>1250.00 BDT</g:price>
+      <g:brand>Example Wear</g:brand>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:condition>new</g:condition>
+      <g:item_group_id>TS-100</g:item_group_id>
+      <g:product_type>Men &gt; T-Shirts</g:product_type>
+      <g:color>White</g:color>
+      <g:size>M</g:size>
+      <g:gender>male</g:gender>
+      <g:age_group>adult</g:age_group>
+      <g:custom_label_0>regular</g:custom_label_0>
+      <g:shipping>
+        <g:country>BD</g:country>
+        <g:service>Standard</g:service>
+        <g:price>60.00 BDT</g:price>
+      </g:shipping>
+    </item>
+    <item>
+      <g:id>MUG-7</g:id>
+      <g:title>Ceramic Mug 350ml</g:title>
+      <g:description>Hand-glazed ceramic mug that holds 350 ml and is dishwasher safe.</g:description>
+      <g:link>https://shop.example.com/product/ceramic-mug</g:link>
+      <g:image_link>https://cdn.example.com/img/mug.jpg</g:image_link>
+      <g:availability>in_stock</g:availability>
+      <g:price>18.50 USD</g:price>
+      <g:brand>Kiln &amp; Co</g:brand>
+      <g:identifier_exists>no</g:identifier_exists>
+      <g:condition>new</g:condition>
+      <g:product_type>Home &gt; Kitchen</g:product_type>
+      <g:custom_label_0>regular</g:custom_label_0>
+      <g:shipping>
+        <g:country>BD</g:country>
+        <g:service>Standard</g:service>
+        <g:price>60.00 BDT</g:price>
+      </g:shipping>
+    </item>
+  </channel>
+</rss>
