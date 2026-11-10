@@ -127,6 +127,15 @@ feed-builder build --source woocommerce --config feed.yaml --out feeds --increme
 
 On each run the tool compares every item against `feeds/.feed-state.json` and writes, next to the full feeds, `*.delta.xml` / `*.delta.csv` with only new and changed items, plus `removed-<channel>.txt` listing ids that disappeared. Full feeds are rewritten only when their bytes change, so file timestamps stay stable for fetchers that rely on them.
 
+## Comparing two feeds
+
+```bash
+feed-builder diff feeds-yesterday/google-merchant-feed.xml feeds/google-merchant-feed.xml
+feed-builder diff old.csv new.csv --ignore sale_price_effective_date --format json --output diff.json
+```
+
+Matches items by `id` and lists what was added, removed or changed, with the old and new value of each changed field (Google XML and Meta CSV are both supported; the two files must be the same kind). Use it to review a catalog change before uploading, or in CI with `--exit-code` (status 1 when the feeds differ). `--limit N` caps each section of the text report, `--ignore` skips noisy fields. It works on any generated file, so it needs no state file or network access.
+
 ## Setting up the feeds
 
 Host the generated files at a stable HTTPS URL (a static path on your web server is enough) and refresh them with cron or a CI job.

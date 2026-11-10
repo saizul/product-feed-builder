@@ -14,6 +14,9 @@ from . import __version__
 from .channels import CHANNELS
 from .config import Config, load_config
 from .dates import parse_dt
+from .diff import diff_feeds, load_feed
+from .diff import to_json as diff_to_json
+from .diff import to_text as diff_to_text
 from .gtin import validate_gtin
 from .images import check_images
 from .models import FeedBuilderError, Product, SourceError
@@ -54,6 +57,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     ic = sub.add_parser("init-config", help="print or write an annotated starter config")
     ic.add_argument("--output", help="write to a file instead of stdout")
+
+    d = sub.add_parser("diff", help="compare two generated feeds (added, removed and changed items)")
+    d.add_argument("old", help="the earlier feed (Google XML or Meta CSV)")
+    d.add_argument("new", help="the later feed, same format")
+    d.add_argument("--format", choices=["text", "json"], default="text", help="output format (default text)")
+    d.add_argument("--ignore", default="", help="comma list of fields to ignore, e.g. sale_price_effective_date")
+    d.add_argument("--limit", type=int, default=50, help="max items listed per section in text output (0 = all)")
+    d.add_argument("--output", help="write the report to a file instead of stdout")
+    d.add_argument("--exit-code", action="store_true", help="exit with status 1 when the feeds differ")
 
     g = sub.add_parser("gtin", help="validate GTIN/UPC/EAN codes")
     g.add_argument("codes", nargs="+")
@@ -184,6 +196,21 @@ def main(argv: Optional[List[str]] = None) -> int:
             print("%s\t%s" % (code, "valid" if ok else "invalid: " + why))
             bad += 0 if ok else 1
         return 1 if bad else 0
+    if args.command == "diff":
+        try:
+            ignore = [f.strip() for f in args.ignore.split(",") if f.strip()]
+            result = diff_feeds(load_feed(args.old), load_feed(args.new), ignore)
+        except FeedBuilderError as exc:
+            console.print("[red]Error:[/red] %s" % exc)
+            return 2
+        report = diff_to_json(result) if args.format == "json" else diff_to_text(result, args.limit)
+        if args.output:
+            with open(args.output, "w", encoding="utf-8") as fh:
+                fh.write(report)
+            console.print("wrote %s" % args.output)
+        else:
+            sys.stdout.write(report)
+        return 1 if (args.exit_code and result.has_changes) else 0
     if args.command == "init-config":
         if args.output:
             with open(args.output, "w", encoding="utf-8") as fh:
