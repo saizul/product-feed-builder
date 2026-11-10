@@ -4,6 +4,11 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- `feed-builder diff OLD NEW` compares two generated feeds (Google XML or Meta CSV) and reports added, removed and changed items with per-field old and new values. Supports `--format json`, `--ignore`, `--limit`, `--output` and `--exit-code`.
+
 ## [0.1.0] - 2026-11-09
 
 ### Added
