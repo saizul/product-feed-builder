@@ -1,4 +1,5 @@
 """Command line interface."""
+
 from __future__ import annotations
 
 import argparse
@@ -25,6 +26,10 @@ from .report import write_report
 from .sample_config import SAMPLE_CONFIG
 from .sources import csv_source, shopify, woocommerce
 from .state import compute_delta, hashes, load_state, save_state
+from .validate import to_csv as validate_to_csv
+from .validate import to_json as validate_to_json
+from .validate import to_text as validate_to_text
+from .validate import validate_feed
 from .writers import render_channel, write_if_changed
 
 
@@ -67,6 +72,17 @@ def build_parser() -> argparse.ArgumentParser:
     d.add_argument("--output", help="write the report to a file instead of stdout")
     d.add_argument("--exit-code", action="store_true", help="exit with status 1 when the feeds differ")
 
+    v = sub.add_parser("validate", help="lint an existing feed file against the channel requirements")
+    v.add_argument("feed", help="feed file (Google XML or Meta CSV)")
+    v.add_argument(
+        "--channel", choices=sorted(CHANNELS), help="channel to check against (default: detected from the file)"
+    )
+    v.add_argument("--format", choices=["text", "json", "csv"], default="text", help="output format (default text)")
+    v.add_argument("--limit", type=int, default=0, help="max issues listed in text output (default 0 = all)")
+    v.add_argument("--output", help="write the report to a file instead of stdout")
+    v.add_argument("--strict", action="store_true", help="also exit with status 1 when there are only warnings")
+    v.add_argument("--now", help="override the current time (ISO 8601) used for expired-sale checks")
+
     g = sub.add_parser("gtin", help="validate GTIN/UPC/EAN codes")
     g.add_argument("codes", nargs="+")
     return p
@@ -83,7 +99,8 @@ def _load_products(args, cfg: Config, console: Console) -> List[Product]:
         store = args.store_url or store
         cfg.store_url = cfg.store_url or store
         wsrc = woocommerce.WooCommerceSource(
-            client, store,
+            client,
+            store,
             per_page=int(cfg.woo.get("per_page", 100)),
             include_variations=bool(cfg.woo.get("include_variations", True)),
             status=str(cfg.woo.get("status", "publish")),
@@ -94,9 +111,12 @@ def _load_products(args, cfg: Config, console: Console) -> List[Product]:
     else:
         client, shop = shopify.client_from_env(shop=args.shop or "")
         ssrc = shopify.ShopifySource(
-            client, shop, store_url=args.store_url or cfg.store_url,
-            api_version=str(cfg.shopify.get("api_version") or os.environ.get("SHOPIFY_API_VERSION")
-                            or shopify.DEFAULT_API_VERSION),
+            client,
+            shop,
+            store_url=args.store_url or cfg.store_url,
+            api_version=str(
+                cfg.shopify.get("api_version") or os.environ.get("SHOPIFY_API_VERSION") or shopify.DEFAULT_API_VERSION
+            ),
             status=str(cfg.shopify.get("status", "active")),
         )
         cfg.store_url = cfg.store_url or ssrc.store_url
@@ -120,7 +140,9 @@ def _print_summary(result: BuildResult, console: Console) -> None:
     for col in ("Channel", "In feed", "Rejected", "Errors", "Warnings"):
         table.add_column(col)
     for name, ch in result.channels.items():
-        table.add_row(CHANNELS[name].label, str(len(ch.records)), str(len(ch.invalid)), str(len(ch.errors)), str(len(ch.warnings)))
+        table.add_row(
+            CHANNELS[name].label, str(len(ch.records)), str(len(ch.invalid)), str(len(ch.errors)), str(len(ch.warnings))
+        )
     console.print(table)
     console.print("products read: %d, filtered out: %d" % (result.total_input, len(result.filtered)))
 
@@ -168,8 +190,10 @@ def run_build(args, console: Console, image_check: Optional[Callable] = None) ->
             write_if_changed(dpath, render_channel(name, [r for r in ch.records if r.product_id in upserts], cfg))
             rpath = os.path.join(args.out, "removed-%s.txt" % name)
             write_if_changed(rpath, ("\n".join(delta.removed) + ("\n" if delta.removed else "")).encode("utf-8"))
-            console.print("  delta: %d new, %d changed, %d unchanged, %d removed" % (
-                len(delta.new), len(delta.changed), len(delta.unchanged), len(delta.removed)))
+            console.print(
+                "  delta: %d new, %d changed, %d unchanged, %d removed"
+                % (len(delta.new), len(delta.changed), len(delta.unchanged), len(delta.removed))
+            )
             new_state[name] = hashes(ch.records)
     if args.incremental:
         save_state(state_path, new_state)
@@ -181,6 +205,34 @@ def run_build(args, console: Console, image_check: Optional[Callable] = None) ->
     errors = sum(len(ch.errors) for ch in result.channels.values())
     if args.strict and errors:
         console.print("[red]%d error(s) found (--strict)[/red]" % errors)
+        return 1
+    return 0
+
+
+def run_validate(args, console: Console) -> int:
+    try:
+        now = None
+        if args.now:
+            now = parse_dt(args.now)
+            if now is None:
+                raise FeedBuilderError("--now must be an ISO 8601 date/time")
+        result = validate_feed(load_feed(args.feed), channel=args.channel, now=now)
+    except FeedBuilderError as exc:
+        console.print("[red]Error:[/red] %s" % exc)
+        return 2
+    if args.format == "json":
+        report = validate_to_json(result)
+    elif args.format == "csv":
+        report = validate_to_csv(result)
+    else:
+        report = validate_to_text(result, args.limit)
+    if args.output:
+        with open(args.output, "w", encoding="utf-8", newline="") as fh:
+            fh.write(report)
+        console.print("wrote %s" % args.output)
+    else:
+        sys.stdout.write(report)
+    if result.errors or (args.strict and result.warnings):
         return 1
     return 0
 
@@ -211,6 +263,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         else:
             sys.stdout.write(report)
         return 1 if (args.exit_code and result.has_changes) else 0
+    if args.command == "validate":
+        return run_validate(args, console)
     if args.command == "init-config":
         if args.output:
             with open(args.output, "w", encoding="utf-8") as fh:

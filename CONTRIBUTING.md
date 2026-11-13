@@ -24,6 +24,7 @@ CI runs both on Python 3.10, 3.11, 3.12 and 3.13.
 - `channels.py` holds the per-channel specs (field order, required fields, limits).
 - `pipeline.py` maps, formats and validates products into records.
 - `writers.py` serialises records (Google XML, Meta CSV).
+- `diff.py` parses existing feed files; `validate.py` lints them against the channel specs.
 
 ## Guidelines
 

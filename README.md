@@ -20,6 +20,7 @@ Built by [Saizul Amin](https://saizul.com), e-commerce web developer and SEO spe
 - **Limits**: title and description length limits per channel (truncate at a word boundary or reject), HTML stripped, control characters removed, relative URLs made absolute, additional images capped.
 - **Optional image checks**: `--check-images` sends HEAD requests (with a ranged GET fallback) and refuses private/local addresses.
 - **Custom labels** (`custom_label_0..4`) from rules, and **filtering rules**: exclude out-of-stock, include/exclude categories, ids, price bounds and arbitrary conditions.
+- **Feed linting**: `feed-builder validate` checks any existing Google XML or Meta CSV file against the channel rules, including variant (`item_group_id`) consistency.
 - **Incremental output**: state file with per-item hashes, delta feeds containing only new/changed items, a list of removed ids, and feed files that are only rewritten when their content changes.
 
 ## Install
@@ -135,6 +136,21 @@ feed-builder diff old.csv new.csv --ignore sale_price_effective_date --format js
 ```
 
 Matches items by `id` and lists what was added, removed or changed, with the old and new value of each changed field (Google XML and Meta CSV are both supported; the two files must be the same kind). Use it to review a catalog change before uploading, or in CI with `--exit-code` (status 1 when the feeds differ). `--limit N` caps each section of the text report, `--ignore` skips noisy fields. It works on any generated file, so it needs no state file or network access.
+
+## Validating an existing feed
+
+```bash
+feed-builder validate feeds/google-merchant-feed.xml
+feed-builder validate supplier-feed.csv --channel meta --format json --output issues.json
+```
+
+Lints a feed file that already exists (one you edited by hand, or one produced by another tool or plugin) against the same channel specs `build` uses, without needing the original products. The channel is detected from the file (XML is Google, CSV is Meta); use `--channel google` to check a CSV against Google's rules. It reports:
+
+- **errors**: `missing_required`, `duplicate_id`, `too_long`, `price_invalid` (must look like `1299.00 BDT`), `price_not_positive`, `sale_price_not_lower`, `currency_mismatch`, `sale_dates_invalid`, `availability_invalid` / `condition_invalid` (wrong vocabulary for the channel, e.g. `in stock` in a Google feed), `url_invalid`, `image_placeholder`, `gtin_invalid` and the Google apparel rules.
+- **warnings**: `sale_expired`, `missing_identifier` (no GTIN or brand + MPN and no `identifier_exists=no`), `identifier_conflict`, `enum_invalid`, `inventory_invalid`, `title_all_caps`, `html_in_text`, `description_same_as_title`, `image_format`, `image_duplicated`, `additional_images_truncated`.
+- **variant groups**: items sharing an `item_group_id` that have none of `color size material pattern gender age_group` (`variant_attributes_missing`), the same combination as another variant (`variant_duplicate`), different brands (`variant_brand_mismatch`), or a group id that is also another product's id (`variant_group_id_conflict`).
+
+Output is text (errors first, `--limit N` caps the list), `--format json` or `--format csv`, to stdout or `--output`. The exit code is 1 when there are errors (with `--strict`, also for warnings) and 2 when the file cannot be read, so it can gate an upload step in CI. `--now` fixes the time used for the expired-sale check.
 
 ## Setting up the feeds
 
