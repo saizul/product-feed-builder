@@ -1,4 +1,5 @@
 """Compare two generated feeds: which items were added, removed or changed."""
+
 from __future__ import annotations
 
 import csv
@@ -19,6 +20,7 @@ class FeedItems:
     kind: str  # "google" or "meta"
     items: Items = field(default_factory=dict)
     duplicates: List[str] = field(default_factory=list)
+    missing_ids: List[str] = field(default_factory=list)  # row labels of CSV rows without an id
 
 
 @dataclass
@@ -94,6 +96,8 @@ def _parse_meta(data: bytes) -> FeedItems:
         fields: Dict[str, Value] = {k: v.strip() for k, v in row.items() if k and isinstance(v, str) and v.strip()}
         pid = fields.get("id")
         if not isinstance(pid, str):
+            if fields:
+                out.missing_ids.append("row %d" % reader.line_num)
             continue
         if pid in out.items:
             out.duplicates.append(pid)
@@ -133,9 +137,7 @@ def diff_feeds(old: FeedItems, new: FeedItems, ignore: Iterable[str] = ()) -> Fe
     for pid in sorted(set(old.items) & set(new.items)):
         a, b = old.items[pid], new.items[pid]
         deltas = {
-            name: (a.get(name), b.get(name))
-            for name in sorted((set(a) | set(b)) - skip)
-            if a.get(name) != b.get(name)
+            name: (a.get(name), b.get(name)) for name in sorted((set(a) | set(b)) - skip) if a.get(name) != b.get(name)
         }
         if deltas:
             result.changed[pid] = deltas
@@ -190,9 +192,17 @@ def to_text(diff: FeedDiff, limit: int = 50) -> str:
         return ["  ... and %d more" % (total - limit)] if limit and total > limit else []
 
     if diff.added:
-        lines += ["", "Added (%d):" % len(diff.added)] + ["  + %s" % pid for pid in capped(diff.added)] + more(len(diff.added))
+        lines += (
+            ["", "Added (%d):" % len(diff.added)]
+            + ["  + %s" % pid for pid in capped(diff.added)]
+            + more(len(diff.added))
+        )
     if diff.removed:
-        lines += ["", "Removed (%d):" % len(diff.removed)] + ["  - %s" % pid for pid in capped(diff.removed)] + more(len(diff.removed))
+        lines += (
+            ["", "Removed (%d):" % len(diff.removed)]
+            + ["  - %s" % pid for pid in capped(diff.removed)]
+            + more(len(diff.removed))
+        )
     if diff.changed:
         lines += ["", "Changed (%d):" % len(diff.changed)]
         for pid in capped(list(diff.changed)):
@@ -203,6 +213,9 @@ def to_text(diff: FeedDiff, limit: int = 50) -> str:
         lines += ["", "Changed fields: " + ", ".join("%s (%d)" % kv for kv in diff.field_counts().items())]
     for label, dups in (("old", diff.duplicates_old), ("new", diff.duplicates_new)):
         if dups:
-            lines += ["", "Warning: %d duplicate id(s) in the %s feed (first occurrence used): %s"
-                      % (len(dups), label, ", ".join(sorted(set(dups))[:10]))]
+            lines += [
+                "",
+                "Warning: %d duplicate id(s) in the %s feed (first occurrence used): %s"
+                % (len(dups), label, ", ".join(sorted(set(dups))[:10])),
+            ]
     return "\n".join(lines) + "\n"

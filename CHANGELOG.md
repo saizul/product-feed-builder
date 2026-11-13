@@ -8,6 +8,7 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 - `feed-builder diff OLD NEW` compares two generated feeds (Google XML or Meta CSV) and reports added, removed and changed items with per-field old and new values. Supports `--format json`, `--ignore`, `--limit`, `--output` and `--exit-code`.
+- `feed-builder validate FEED` lints an existing Google XML or Meta CSV feed against the channel specs: required fields, length limits, price and sale formats, sale windows, availability/condition vocabulary, URLs, GTIN check digits, identifiers, apparel rules, content warnings and `item_group_id` variant consistency. Supports `--channel`, `--format text|json|csv`, `--limit`, `--output`, `--strict` and `--now`; exits 1 when errors are found.
 
 ## [0.1.0] - 2026-11-09
 
